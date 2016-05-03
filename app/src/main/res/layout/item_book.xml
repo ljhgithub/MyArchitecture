@@ -5,25 +5,25 @@
     <data>
 
         <variable
-            name="bookvm"
+            name="book"
             type="com.ljh.www.myarchitecture.vm.BookViewModel" />
     </data>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="80dp"
         android:orientation="vertical">
 
         <ImageView
-
             android:layout_width="80dp"
             android:layout_height="80dp"
-            bind:imageUrl="@{book.url}" />
+            bind:imageError="@{@drawable/ic_launcher}"
+            bind:imageUrl="@{book.getUrl}" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{bookvm.book.name}" />
+            android:text="@{book.getName}" />
 
     </LinearLayout>
 </layout>

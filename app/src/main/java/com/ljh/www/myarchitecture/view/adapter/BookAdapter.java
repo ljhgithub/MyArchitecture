@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import com.ljh.www.myarchitecture.R;
 import com.ljh.www.myarchitecture.databinding.ItemBookBinding;
 import com.ljh.www.myarchitecture.model.BookModel;
+import com.ljh.www.myarchitecture.vm.BookViewModel;
 
 import java.util.List;
 
@@ -25,12 +26,15 @@ public class BookAdapter extends RecyclerView.Adapter<ViewHolder> {
     private List<BookModel> books;
 
 
-
     public BookAdapter(Context context) {
         this.context = context;
         mInflate = LayoutInflater.from(context);
     }
 
+    public void setBooks(List<BookModel> books){
+        this.books=books;
+
+    }
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         ItemBookBinding bookBinding = DataBindingUtil.inflate(mInflate, R.layout.item_book, parent, false);
@@ -41,13 +45,14 @@ public class BookAdapter extends RecyclerView.Adapter<ViewHolder> {
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        BookViewHolder bookViewHolder= (BookViewHolder) holder;
-        ItemBookBinding itemBookBinding=((BookViewHolder) holder).bookBinding;
+        BookViewHolder bookViewHolder = (BookViewHolder) holder;
+        ItemBookBinding itemBookBinding = bookViewHolder.bookBinding;
+        itemBookBinding.setBook(new BookViewModel(context, books.get(position)));
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return books.size();
     }
 
 
