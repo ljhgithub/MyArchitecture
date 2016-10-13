@@ -1,13 +1,9 @@
 package com.ljh.www.myarchitecture.http;
 
-import android.os.Environment;
 import android.support.annotation.NonNull;
-
-import com.ljh.www.myarchitecture.http.LoggingInterceptor;
 
 import java.util.concurrent.TimeUnit;
 
-import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
@@ -16,9 +12,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 /**
  * Created by ljh on 2016/4/20.
  */
-public class RetrofitHelper {
-    public static final String BASE_URL = "http://t.assistant.120yibao.com";
-    //    public static final String API_URL = "http://10.0.0.77:8080";
+public class RetrofitProvider {
+    public static final String BASE_URL = "https://api.github.com";
     private static Retrofit retrofit;
     private static OkHttpClient client;
 

@@ -2,8 +2,10 @@ package com.ljh.www.myarchitecture.view.adapter;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ViewHolder;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,6 +50,7 @@ public class BookAdapter extends RecyclerView.Adapter<ViewHolder> {
         BookViewHolder bookViewHolder = (BookViewHolder) holder;
         ItemBookBinding itemBookBinding = bookViewHolder.bookBinding;
         itemBookBinding.setBook(new BookViewModel(context, books.get(position)));
+        Log.d("tag","onBindViewHolder");
     }
 
     @Override

@@ -14,9 +14,13 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.ljh.www.myarchitecture.R;
-import com.ljh.www.myarchitecture.data.HttpService;
 import com.ljh.www.myarchitecture.data.RemoteDataSource;
-import com.ljh.www.myarchitecture.http.RetrofitHelper;
+import com.ljh.www.myarchitecture.data.net.HttpService;
+import com.ljh.www.myarchitecture.data.source.DataCallback;
+import com.ljh.www.myarchitecture.data.source.GithubDataStore;
+import com.ljh.www.myarchitecture.http.RetrofitProvider;
+import com.ljh.www.myarchitecture.model.Github;
+import com.ljh.www.myarchitecture.util.log.LogUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import okhttp3.Authenticator;
@@ -52,10 +57,11 @@ public class RetrofitActivity extends AppCompatActivity implements View.OnClickL
     public static final String TOKEN = "5ff74b642d045d0ad33093d367b16f3d";
     private ImageView iv;
 
-    public static void start(AppCompatActivity appCompatActivity){
+    public static void start(AppCompatActivity appCompatActivity) {
         Intent it = new Intent(appCompatActivity, RetrofitActivity.class);
         appCompatActivity.startActivity(it);
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,13 +88,27 @@ public class RetrofitActivity extends AppCompatActivity implements View.OnClickL
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
+
+        dataStore = new GithubDataStore();
     }
+
+    GithubDataStore dataStore;
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_get:
-                get();
+                dataStore.getGithubList(new DataCallback<List<Github>>() {
+                    @Override
+                    public void onError(int code, String msg) {
+                        LogUtils.LOGD("tag", "onError" + code + msg);
+                    }
+
+                    @Override
+                    public void onSuccess(List<Github> githubs) {
+                        LogUtils.LOGD("tag", "onSuccess" + githubs.size());
+                    }
+                });
                 break;
             case R.id.btn_post:
                 post();
@@ -131,7 +151,7 @@ public class RetrofitActivity extends AppCompatActivity implements View.OnClickL
         }
 
         try {
-            Log.d("tag", "code" + response.code()+response.errorBody().string());
+            Log.d("tag", "code" + response.code() + response.errorBody().string());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -143,13 +163,13 @@ public class RetrofitActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void get() {
-        HttpService service = RetrofitHelper.getRetrofit().create(HttpService.class);
+        HttpService service = RetrofitProvider.getRetrofit().create(HttpService.class);
         Call<RemoteDataSource> call = service.typeList(TOKEN, System.currentTimeMillis());
         call.enqueue(this);
     }
 
     private void post() {
-        HttpService service = RetrofitHelper.getRetrofit().create(HttpService.class);
+        HttpService service = RetrofitProvider.getRetrofit().create(HttpService.class);
         Call<RemoteDataSource> call = service.patientList(0, 10, TOKEN);
         call.enqueue(this);
     }
@@ -177,7 +197,7 @@ public class RetrofitActivity extends AppCompatActivity implements View.OnClickL
 
 
     private void uploadImage() {
-        HttpService service = RetrofitHelper.getRetrofit().create(HttpService.class);
+        HttpService service = RetrofitProvider.getRetrofit().create(HttpService.class);
         MediaType TEXT = MediaType.parse("application/text; charset=utf-8");
         RequestBody token = RequestBody.create(TEXT, TOKEN);
         MediaType IMAGE = MediaType.parse("image/*");
@@ -188,7 +208,7 @@ public class RetrofitActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void uploadImages() {
-        HttpService service = RetrofitHelper.getRetrofit().create(HttpService.class);
+        HttpService service = RetrofitProvider.getRetrofit().create(HttpService.class);
         MediaType TEXT = MediaType.parse("application/text; charset=utf-8");
         RequestBody token = RequestBody.create(TEXT, TOKEN);
         MediaType IMAGE = MediaType.parse("image/*");
@@ -224,7 +244,7 @@ public class RetrofitActivity extends AppCompatActivity implements View.OnClickL
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
         RequestBody body = RequestBody.create(JSON, p.toString());
 
-        HttpService service = RetrofitHelper.getRetrofit().create(HttpService.class);
+        HttpService service = RetrofitProvider.getRetrofit().create(HttpService.class);
         Call<RemoteDataSource> call = service.updateComplaint(TOKEN, body);
 
         call.enqueue(this);
@@ -321,7 +341,7 @@ public class RetrofitActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void testInterceptor() {
-        Retrofit retrofit = RetrofitHelper.getRetrofit("http://www.publicobject.com");
+        Retrofit retrofit = RetrofitProvider.getRetrofit("http://www.publicobject.com");
         HttpService service = retrofit.create(HttpService.class);
         Call<ResponseBody> call = service.testInterceptor();
         call.enqueue(new Callback<ResponseBody>() {
@@ -338,14 +358,15 @@ public class RetrofitActivity extends AppCompatActivity implements View.OnClickL
         });
     }
 
-    private void testAuthenticate(){
-       OkHttpClient client = new OkHttpClient.Builder()
+    private void testAuthenticate() {
+        OkHttpClient client = new OkHttpClient.Builder()
                 .authenticator(new Authenticator() {
-                    @Override public Request authenticate(Route route, okhttp3.Response response) throws IOException {
-                        Log.d("tag","Authenticating for response: " + response.request().header("Authorization"));
-                        Log.d("tag","Challenges: " + response.challenges());
+                    @Override
+                    public Request authenticate(Route route, okhttp3.Response response) throws IOException {
+                        Log.d("tag", "Authenticating for response: " + response.request().header("Authorization"));
+                        Log.d("tag", "Challenges: " + response.challenges());
                         String credential = Credentials.basic("jesse", "password1");
-                        if (credential.equals( response.request().header("Authorization"))){
+                        if (credential.equals(response.request().header("Authorization"))) {
                             return null;
                         }
                         return response.request().newBuilder()
@@ -362,13 +383,13 @@ public class RetrofitActivity extends AppCompatActivity implements View.OnClickL
         client.newCall(request).enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(okhttp3.Call call, IOException e) {
-                Log.d("tag"," Failure: " );
+                Log.d("tag", " Failure: ");
             }
 
             @Override
             public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
-                Log.d("tag",call.request().headers()+"Authenticating for header"+response.request().headers());
-                Log.d("tag"," response"+response.headers()+response.code()+response.message());
+                Log.d("tag", call.request().headers() + "Authenticating for header" + response.request().headers());
+                Log.d("tag", " response" + response.headers() + response.code() + response.message());
             }
         });
 

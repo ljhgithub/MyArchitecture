@@ -3,10 +3,8 @@ package com.ljh.www.myarchitecture.ui.activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringDef;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -14,12 +12,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.reflect.TypeToken;
 import com.ljh.www.myarchitecture.R;
-import com.ljh.www.myarchitecture.data.HttpService;
+import com.ljh.www.myarchitecture.data.net.HttpService;
 import com.ljh.www.myarchitecture.data.RemoteDataSource;
-import com.ljh.www.myarchitecture.http.RetrofitHelper;
+import com.ljh.www.myarchitecture.http.RetrofitProvider;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,11 +24,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import okhttp3.HttpUrl;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -98,7 +92,7 @@ public class RxJavaActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void rxJavaFlatMap() {
-        HttpService service = RetrofitHelper.getRetrofitRxJava().create(HttpService.class);
+        HttpService service = RetrofitProvider.getRetrofitRxJava().create(HttpService.class);
         service.homepaeInfo(RetrofitActivity.TOKEN)
                 .subscribeOn(Schedulers.io())
                 .flatMap(new Func1<RemoteDataSource, Observable<List<ListItem>>>() {
@@ -140,7 +134,7 @@ public class RxJavaActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private Observable<List<ListItem>> getListItemObservable() {
-        HttpService service = RetrofitHelper.getRetrofitRxJava().create(HttpService.class);
+        HttpService service = RetrofitProvider.getRetrofitRxJava().create(HttpService.class);
         Observable<List<ListItem>> observable = service.rxTypeList("5ff74b642d045d0ad33093d367b16f3d", System.currentTimeMillis())
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
@@ -174,7 +168,7 @@ public class RxJavaActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void rxJavaRetrofitDownloadImage() {
-        HttpService service = RetrofitHelper.getRetrofitRxJava().create(HttpService.class);
+        HttpService service = RetrofitProvider.getRetrofitRxJava().create(HttpService.class);
         Observable<List<ListItem>> observable = service.rxTypeList("5ff74b642d045d0ad33093d367b16f3d", System.currentTimeMillis())
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
@@ -248,7 +242,7 @@ public class RxJavaActivity extends AppCompatActivity implements View.OnClickLis
 
     private Bitmap getBitmap(String url) {
         try {
-            HttpService service = RetrofitHelper.getRetrofit().create(HttpService.class);
+            HttpService service = RetrofitProvider.getRetrofit().create(HttpService.class);
             Response<ResponseBody> responseBody = service.downloadImage(url).execute();
             Log.d("tag", "response" + responseBody.isSuccessful() + responseBody.code() + responseBody.message());
             if (HttpURLConnection.HTTP_OK == responseBody.code()) {
@@ -300,6 +294,7 @@ public class RxJavaActivity extends AppCompatActivity implements View.OnClickLis
 
     private void testRxJava() {
 
+
         Observer<String> observer = new Observer<String>() {
             @Override
             public void onCompleted() {
@@ -317,6 +312,7 @@ public class RxJavaActivity extends AppCompatActivity implements View.OnClickLis
             }
         };
 
+
         Subscriber<String> subscriber = new Subscriber<String>() {
             @Override
             public void onCompleted() {
@@ -333,7 +329,6 @@ public class RxJavaActivity extends AppCompatActivity implements View.OnClickLis
                 Log.d("tag", "onNext" + s);
             }
         };
-
         Action1<String> action1 = new Action1<String>() {
             @Override
             public void call(String s) {
@@ -368,7 +363,7 @@ public class RxJavaActivity extends AppCompatActivity implements View.OnClickLis
         Observable.create(new Observable.OnSubscribe<Bitmap>() {
             @Override
             public void call(final Subscriber<? super Bitmap> subscriber) {
-                HttpService service = RetrofitHelper.getRetrofit().create(HttpService.class);
+                HttpService service = RetrofitProvider.getRetrofit().create(HttpService.class);
                 service.downloadImage(IMAGE_URL).enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

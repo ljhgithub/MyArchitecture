@@ -10,9 +10,11 @@
     </data>
 
     <LinearLayout
+        android:id="@+id/ll_book"
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:orientation="vertical">
+        android:onClick="@{book.onClickBook}"
+        android:orientation="horizontal">
 
         <ImageView
             android:layout_width="80dp"

@@ -19,12 +19,8 @@
             android:name="com.ljh.www.myarchitecture.MyGlideModule"
             android:value="GlideModule" />
 
-        <activity android:name=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+        <activity android:name=".view.WeatherActivity">
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".ui.activity.RxJavaActivity"
@@ -33,8 +29,19 @@
             android:name=".ui.activity.RetrofitActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".view.TestActivity"
+            android:name=".view.BooksActivity"
             android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

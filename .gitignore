@@ -39,7 +39,6 @@ build/
 
 
 # Gradle cache
-.gradle
 
 # Sandbox stuff
 _sandbox

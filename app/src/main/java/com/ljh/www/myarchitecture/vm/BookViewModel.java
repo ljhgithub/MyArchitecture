@@ -1,7 +1,7 @@
 package com.ljh.www.myarchitecture.vm;
 
 import android.content.Context;
-import android.databinding.ObservableField;
+import android.view.View;
 
 import com.ljh.www.myarchitecture.model.BookModel;
 
@@ -23,5 +23,8 @@ public class BookViewModel {
 
     public String getUrl() {
         return book.url;
+    }
+
+    public void onClickBook(View view) {
     }
 }
